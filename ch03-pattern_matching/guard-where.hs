@@ -62,3 +62,7 @@ greet name = badGreeting ++ " " ++ name
 --since where binding cannot be shared by other pattern, 
 --you should define nice and bad greeting as global.
 
+calBmis :: [(Double, Double)] -> [Double]
+calBmis xs = [bmi w h | (w,h) <- xs]
+    where bmi weight height = weight / (height ^ 2)
+--You can use function in where statement.
