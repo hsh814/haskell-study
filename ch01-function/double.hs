@@ -106,9 +106,18 @@ list comprehesion: just like set-builder notation
 -}
 --tuple
 {-
-
-
-
-
-
+    Prelude> (1,3)
+    (1,3)
+can use anything    
+    Prelude> (2, 'a', [1, 2, 3, 5])
+    (2,'a',[1,2,3,5])
+you can make list of tuples of same length
+    Prelude> [(1, 2), (3,4), (5,6)]
+    [(1,2),(3,4),(5,6)]
+this cause error: tuple of different length are treated as different type
+    Prelude> [(1,2),(3,4,5),(6,7)]
+    Prelude> let triples = [(a,b,c) | c <- [1..10], b <- [1..10], a <- [1..10]]
+    Prelude> let rightTriples = [(a,b,c) | c <- [1..10], b <- [1..10], a <- [1..10], a^2 + b^2 == c^2]
+    Prelude> rightTriples
+    [(4,3,5),(3,4,5),(8,6,10),(6,8,10)]
 -}
