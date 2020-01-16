@@ -55,3 +55,12 @@ sqrt' n = let
 --scanr, scanl: similar to fold...
 --sqrtSums :: Int -> Int
 --sqrtSums n = length (takeWhile (< n) (scanl1 (+) (map sqrt [1..]))) + 1
+
+($') :: (a -> b) -> a -> b
+f $' x = f x
+--This will convert function left-associative to right-associative
+--It can replace parentheses
+{-
+    Prelude> sum $ filter (> 10) (map (*2) [1..10])
+    80
+-}
