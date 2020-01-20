@@ -62,6 +62,46 @@ module DataType
 (..) makes every generator included.
 -}
 
+--record syntax
+data Person = Person String String Int Float String deriving (Show)
+guy = Person "Frankie" "Foster" 23 167.0 "Cookies"
+--very annoying way to get data:
+firstName :: Person -> String
+firstName (Person firstname _ _ _ _) = firstname
+{-
+    *Main> firstName guy
+    "Frankie"
+-}
 
+--more simple way: record syntax
+data Person1 = Person1
+    { firstname :: String
+    , lastname :: String
+    , age :: Int
+    , height :: Float
+    , food :: String
+    } deriving (Show)
+{-
+    *Main> :t firstname
+    firstname :: Person1 -> String
+    *Main> :t food
+    food :: Person1 -> String
+    *Main> :t age
+    age :: Person1 -> Int
+-}
 
+frankie = Person1 "Frankie" "Foster" 23 167.0 "Cookies"
+{-
+    *Main> frankie
+    Person1 {firstname = "Frankie", lastname = "Foster", age = 23, height = 167.0, food = "Cookies"}
+you can access data by name
+    *Main> food frankie
+    "Cookies"
+-}
 
+bloo = Person1 {firstname="Bloo", lastname="Bloo", age=10, height=88.8, food="blueberry"}
+{-
+You can generate like this: fields do not need to follow order
+    *Main> bloo
+    Person1 {firstname = "Bloo", lastname = "Bloo", age = 10, height = 88.8, food = "blueberry"}
+-}
