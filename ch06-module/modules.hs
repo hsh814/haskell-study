@@ -84,3 +84,36 @@ Then, can we use strict version of foldl?
     Prelude Data.List> foldl' (+) 0 [1..100000000]
     5000000050000000
 -}
+
+digitSum :: Int -> Int
+digitSum = sum. map DC.digitToInt . show
+{-
+sum digits
+    *Main Data.Char> digitSum 12212
+    8
+    *Main Data.Char> :t digitSum
+    digitSum :: Int -> Int
+strange type of Data.List.find: what is Maybe?
+it is list that can have 1 or no type a
+    *Main Data.Char> :t find
+    find :: Foldable t => (a -> Bool) -> t a -> Maybe a
+    *Main Data.Char> Nothing
+    Nothing
+    *Main Data.Char> Just "hey"
+    Just "hey"
+    *Main Data.Char> :t Just "hey"
+    Just "hey" :: Maybe [Char]
+    *Main Data.Char> :t Just True
+    Just True :: Maybe Bool
+example
+    Prelude Data.List> find (>4) [3..10]
+    Just 5
+    Prelude Data.List> find (>4) [1,2,3]
+    Nothing
+-}
+firstTo :: Int -> Maybe Int
+firstTo n = find (\x -> digitSum x == n) [1..]
+{-
+    *Main Data.List> firstTo 40
+    Just 49999
+-}
