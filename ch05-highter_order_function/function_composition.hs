@@ -1,6 +1,8 @@
 --Function composition: (f . g)(x) = f(g(x))
-(.') :: (b -> c) -> (a -> b) -> a -> c
-f .' g = \x -> f (g x)
+{-
+(.) :: (b -> c) -> (a -> b) -> a -> c
+f . g = \x -> f (g x)
+-}
 {-
     Prelude> map (\x -> negate (abs x)) [4, -2, 5, -3, 7, 8, -9, -10]
     [-4,-2,-5,-3,-7,-8,-9,-10]
@@ -30,5 +32,7 @@ sum' xs = foldl (+) 0 xs
 fn x = ceiling (negate (tan (cos (max 50 x))))
 fn' = ceiling . negate . tan . cos . max 50
 
+flip' :: (a -> b -> c) -> b -> a -> c
 
+flip' f = (\x y -> f y x)
 
