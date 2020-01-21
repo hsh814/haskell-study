@@ -4,7 +4,7 @@ data TrueorFalse = True | False
 
 data Shape = Circle Float Float Float | Rectangle Float Float Float Float
     deriving (Show)
---Circle Float Float Float is generator
+--Circle Float Float Float is constructor
 {-
     *Main> :t Circle
     Circle :: Float -> Float -> Float -> Shape
@@ -15,7 +15,7 @@ area :: Shape -> Float
 area (Circle _ _ r) = pi * (r ^ 2)
 area (Rectangle x1 y1 x2 y2) = (abs $ x2 - x1) * (abs $ y2 - y1)
 --You cannot write Circle -> Float since Circle is not Type
---Also, you can use pattern matching as generator
+--Also, you can use pattern matching as constructor
 {-
     *Main> area $ Circle 10 20 10
     314.15927
@@ -28,7 +28,7 @@ area (Rectangle x1 y1 x2 y2) = (abs $ x2 - x1) * (abs $ y2 - y1)
 -}
 
 data Point = Point Float Float deriving (Show)
---Generator has same name: only one generator
+--Constructor has same name: only one constructor
 data Shape1 = Circle1 Point Float | Rectangle1 Point Point deriving (Show)
 
 area1 :: Shape1 -> Float
@@ -59,7 +59,7 @@ module DataType
 , move
 ) where    
 
-(..) makes every generator included.
+(..) makes every constructor included.
 -}
 
 --record syntax
@@ -101,7 +101,7 @@ you can access data by name
 
 bloo = Person1 {firstname="Bloo", lastname="Bloo", age=10, height=88.8, food="blueberry"}
 {-
-You can generate like this: fields do not need to follow order
+You can construct like this: fields do not need to follow order
     *Main> bloo
     Person1 {firstname = "Bloo", lastname = "Bloo", age = 10, height = 88.8, food = "blueberry"}
 -}
