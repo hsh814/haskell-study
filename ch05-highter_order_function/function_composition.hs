@@ -31,6 +31,7 @@ sum' xs = foldl (+) 0 xs
 --due to currying, you can omit xs
 fn x = ceiling (negate (tan (cos (max 50 x))))
 fn' = ceiling . negate . tan . cos . max 50
+fn'' x = ceiling . negate . tan . cos $ max 50 x
 
 flip' :: (a -> b -> c) -> b -> a -> c
 
