@@ -153,7 +153,14 @@ instance Functor IT.Tree where
     Node 8 EmptyTree (Node 28 (Node 20 EmptyTree EmptyTree) EmptyTree)
 -}
 
-
+--Either is Functor
+{-
+instance Functor (Either a) where
+    fmap f (Right x) = Right (f x)
+    fmap f (Left x) = Left (f x)
+-}
+--Either is not just Either, but Either a:
+--becuase Either get two parameter, but Either a get one parameter
 
 
 
