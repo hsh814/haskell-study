@@ -1,4 +1,11 @@
 
+module InductiveType (
+    Tree (EmptyTree, Node),
+    singleton,
+    treeInsert,
+    treeElem,
+    numsTree
+) where
 --recursive
 data List1 a = Empty | Cons a (List1 a) deriving (Show, Read, Eq, Ord)
 --Cons is another expression of ':'
