@@ -134,6 +134,22 @@ main7 = do
         return color)
     putStrLn "The colors that you associate with 1,2,3,4 are: "
     CM.mapM putStrLn colors
-
+--forM is opposite of mapM
+{-
+    Which color do you associate with the number1?
+    Violet
+    Which color do you associate with the number2?
+    Purple
+    Which color do you associate with the number3?
+    Lavender
+    Which color do you associate with the number4?
+    Blue
+    The colors that you associate with 1,2,3,4 are: 
+    Violet
+    Purple
+    Lavender
+    Blue
+    [(),(),(),()]
+-}
 
 
