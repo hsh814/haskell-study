@@ -7,12 +7,20 @@ main = do
     putStr contents
     SIO.hClose handle
 
---openFile
+--openFile: file path and IOMode -> return file handle
 {-
     *Main> :t SIO.openFile
     SIO.openFile :: FilePath -> SIO.IOMode -> IO SIO.Handle
 IOMode is enum type
     data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+-}
+
+--hGetContents: Handle -> returns IO String
+{-
+    *Main> :t SIO.hGetContents
+    SIO.hGetContents :: SIO.Handle -> IO String
+hGetContents is lazy: read file only needed.
+Handle is file pointer
 -}
 
 {-
@@ -29,6 +37,7 @@ I'm blasting monsters and never break a sweat
 I'm really thinking I can call this place home
 -}
 
+--withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
 
 
 
