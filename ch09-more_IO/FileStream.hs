@@ -99,7 +99,7 @@ You're so smart, a stand-up bro
 Let you know
 -}
 
-main = do
+main4 = do
     contents <- readFile "todo.txt"
     let 
         todoTasks = lines contents
@@ -126,9 +126,33 @@ To-do list:
 Which one do you want to delete?: 
 4
 
-$ cat todo.txt: output
+$ cat todo.txt
 Beetlejuice
 Beetlejuice
 Bee... cause!
 You're so smart, a stand-up bro 
 -}
+
+main = do
+    contents <- readFile "todo.txt"
+    let 
+        todoTasks = lines contents
+        numberedTasks = zipWith (\n line -> (show n) ++ " - " ++ line) [0..] todoTasks
+    putStrLn "To-do list: "
+    mapM_ putStrLn numberedTasks
+    putStrLn "Which one do you want to delete?: "
+    numberString <- getLine
+    let 
+        num = read numberString
+        newTodoList = unlines $ DL.delete (todoTasks !! num) todoTasks
+--CE.braketOnError: to deal with error
+    CE.bracketOnError (SIO.openTempFile "." "temp")
+        (\ (tempName, tempHandle) -> do
+            SIO.hClose tempHandle
+            SD.removeFile tempName)
+        (\ (tempName, tempHandle) -> do
+            SIO.hPutStr tempHandle newTodoList
+            SIO.hClose tempHandle
+            SD.removeFile "todo.txt"
+            SD.renameFile tempName "todo.txt")
+
