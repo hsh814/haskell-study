@@ -1,6 +1,7 @@
 --Let's read and write file without terminal
 import qualified System.IO as SIO
 import qualified Control.Exception as CE
+import qualified Data.Char as DC
 
 main0 = do 
     handle <- SIO.openFile "text.txt" SIO.ReadMode
@@ -55,8 +56,17 @@ withFile1 name mode f = CE.bracket (SIO.openFile name mode)
     (\handle -> f handle)
 
 --use file as string: readFile, writeFile, appendFile
-main = do
+main2 = do
     contents <- readFile "text.txt"
     putStr contents
-
-
+    writeFile "text-up.txt" (map DC.toUpper contents)
+{-
+inside text-up.txt:
+I THINK EARTH IS A PRETTY GREAT PLACE
+THAT'S SAYING SOMETHING, CAUSE I'VE BEEN THROUGH OUTER SPACE
+I THINK IT SUITS ME, IT'S JUST MY STYLE
+I THINK I'LL GONNA STAY A LITTLE WHILE
+I THINK THAT STRANGERS ARE FRIENDS YOU HAVEN'T MET
+I'M BLASTING MONSTERS AND NEVER BREAK A SWEAT
+I'M REALLY THINKING I CAN CALL THIS PLACE HOME
+-}
