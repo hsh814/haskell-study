@@ -2,6 +2,9 @@
 import qualified System.IO as SIO
 import qualified Control.Exception as CE
 import qualified Data.Char as DC
+import qualified Data.List as DL
+import qualified System.Directory as SD
+
 
 main0 = do 
     handle <- SIO.openFile "text.txt" SIO.ReadMode
@@ -69,4 +72,63 @@ I THINK I'LL GONNA STAY A LITTLE WHILE
 I THINK THAT STRANGERS ARE FRIENDS YOU HAVEN'T MET
 I'M BLASTING MONSTERS AND NEVER BREAK A SWEAT
 I'M REALLY THINKING I CAN CALL THIS PLACE HOME
+-}
+
+--appendFile: just like writeFile, accept it does not delete original text
+main3 = do
+    todoItem <- getLine
+    appendFile "todo.txt" (todoItem ++ "\n")
+
+{- input
+$ runhaskell FileStream.hs 
+Beetlejuice
+$ runhaskell FileStream.hs 
+Beetlejuice
+$ runhaskell FileStream.hs 
+Bee... cause!
+$ runhaskell FileStream.hs 
+You're so smart, a stand-up bro 
+$ runhaskell FileStream.hs 
+Let you know  
+
+$cat todo.txt: output
+Beetlejuice
+Beetlejuice
+Bee... cause!
+You're so smart, a stand-up bro 
+Let you know
+-}
+
+main = do
+    contents <- readFile "todo.txt"
+    let 
+        todoTasks = lines contents
+        numberedTasks = zipWith (\n line -> (show n) ++ " - " ++ line) [0..] todoTasks
+    putStrLn "To-do list: "
+    mapM_ putStrLn numberedTasks
+    putStrLn "Which one do you want to delete?: "
+    numberString <- getLine
+    let 
+        num = read numberString
+        newTodoList = unlines $ DL.delete (todoTasks !! num) todoTasks
+    (tempName, tempHandle) <- SIO.openTempFile "." "temp"
+    SIO.hPutStr tempHandle newTodoList
+    SIO.hClose tempHandle
+    SD.removeFile "todo.txt"
+    SD.renameFile tempName "todo.txt"
+{-
+To-do list: 
+0 - Beetlejuice
+1 - Beetlejuice
+2 - Bee... cause!
+3 - You're so smart, a stand-up bro 
+4 - Let you know
+Which one do you want to delete?: 
+4
+
+$ cat todo.txt: output
+Beetlejuice
+Beetlejuice
+Bee... cause!
+You're so smart, a stand-up bro 
 -}
