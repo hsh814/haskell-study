@@ -53,10 +53,15 @@ remove [fileName, numStr] = do
             SD.removeFile "todo.txt"
             SD.renameFile tempName "todo.txt")
 
+commandNotExist :: String -> [String] -> IO ()
+commandNotExist command _ = 
+    putStrLn $ command ++ " command doesn't exist"
+
 dispatch :: String -> [String] -> IO ()
 dispatch "add" = add
 dispatch "view" = view
 dispatch "remove" = remove
+dispatch command = commandNotExist command
 
 main = do
     (command:argList) <- SE.getArgs
@@ -84,6 +89,9 @@ main = do
 1 - Beetlejuice
 2 - Bee... cause!
 3 - You're so smart, a stand-up bro 
+
+./CommandLine not todo.txt
+not command doesn't exist
 -}
 
 
