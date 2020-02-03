@@ -1,4 +1,4 @@
-Haskell
+# Haskell
 
 - ghc 8.0.2
 
@@ -23,6 +23,9 @@ Haskell
 ## [ch09-more_IO](./ch09-more_IO)
 
 ## [ch10-functional_ps](./ch10-functional_ps)
+
+
+- (from chapter 11, explanations are written in each directory's README.md)
 
 ## [ch11-applicative-functor](./ch11-applicative-functor)
 
