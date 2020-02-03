@@ -1,8 +1,9 @@
 # ch11-applicative-functor
 
+Files are in [app](./app) directory
+
 ## [Functors](./app/Functors.hs)
 
-Files are in [app](./app) directory
 - IO
     ```
     instance Functor IO where
