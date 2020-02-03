@@ -1,6 +1,6 @@
 # ch11-applicative-functor
 
-## Functors
+## [Functors](./app/Functors.hs)
 - IO
   ```
   instance Functor IO where
