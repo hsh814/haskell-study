@@ -1,6 +1,8 @@
 # ch11-applicative-functor
 
 ## [Functors](./app/Functors.hs)
+
+Files are in [app](./app) directory
 - IO
     ```
     instance Functor IO where
@@ -145,5 +147,19 @@
        
 ## [ApplicativeFunctor](./app/ApplicativeFunctor.hs)       
 
+- wrapped
+    
+    ```
+    Prelude> :t fmap (++) (Just "hey")
+    fmap (++) (Just "hey") :: Maybe ([Char] -> [Char])
+    Prelude> :t fmap compare (Just 'a')
+    fmap compare (Just 'a') :: Maybe (Char -> Ordering)
+    Prelude> :t fmap compare "A List Of Chars"
+    fmap compare "A List Of Chars" :: [Char -> Ordering]
+    Prelude> :t fmap (\x y z -> x + y / z) [1..4]
+    fmap (\x y z -> x + y / z) [1..4]
+      :: (Fractional a, Enum a) => [a -> a -> a]
+    ```
+    if you call `fmap (*) (Just 3)`, then it returns `Just ((*) 3)` or `Just (3 *)`, and this is function wrapped with `Just`
 
 
