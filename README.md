@@ -1,5 +1,28 @@
 Haskell
 
--ghc 8.0.2
+- ghc 8.0.2
 
--가장 쉬운 하스켈 책(미란 리포바카)
+- 가장 쉬운 하스켈 책(미란 리포바카)
+
+## [ch01-function](./ch01-function)
+
+## [ch02-type](./ch02-type)
+
+## [ch03-pattern_matching](./ch03-pattern_matching)
+
+## [ch04-recursion](./ch04-recursion)
+
+## [ch05-higher_order_function](./ch05-higher_order_function)
+
+## [ch06-module](./ch06-module)
+
+## [ch07-type_class](./ch07-type_class)
+
+## [ch08-IO](./ch08-IO)
+
+## [ch09-more_IO](./ch09-more_IO)
+
+## [ch10-functional_ps](./ch10-functional_ps)
+
+## [ch11-applicative-functor](./ch11-applicative-functor)
+
