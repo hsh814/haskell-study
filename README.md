@@ -2,6 +2,12 @@
 
 - ghc 8.0.2
 
+- stack 2.1.3
+
+- vscode
+
+- Intellij IEAD + IntelliJ-Haskell
+
 - 가장 쉬운 하스켈 책(미란 리포바카)
 
 ## [ch01-function](./ch01-function)
