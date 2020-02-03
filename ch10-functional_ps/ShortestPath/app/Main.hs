@@ -1,3 +1,5 @@
+import qualified Data.List as DL
+
 data Section = Section { getA :: Int, getB :: Int, getC :: Int } deriving (Show)
 
 type RoadSystem = [Section]
@@ -36,3 +38,30 @@ optimalPath roadSystem =
     in if sum (map snd bestAPath) <= sum (map snd bestBPath)
         then reverse bestAPath
         else reverse bestBPath
+
+{-
+    *Main> optimalPath roadToLondon
+    [(B,10),(C,30),(A,5),(C,20),(B,2),(B,8),(C,0)]
+-}
+
+--now, read roadsystem from file
+groupsOf :: Int -> [a] -> [[a]]
+groupsOf 0 _ = undefined
+groupsOf _ [] = []
+groupsOf n xs = take n xs : groupsOf n (drop n xs)
+
+main = do
+    contents <- getContents
+    let 
+        threes = groupsOf 3 (map read $ lines contents)
+        roadSystem = map (\[a,b,c] -> Section a b c) threes
+        path = optimalPath roadSystem
+        pathString = DL.concat $ map (show . fst) path
+        pathTime = sum $ map snd path
+    putStrLn $ "The shortest path is: " ++ pathString
+    putStrLn $ "Time take: " ++ show pathTime
+{-
+    $ ./Main < mypath.txt
+    The shortest path is: BCACBBC
+    Time take: 75
+-}
