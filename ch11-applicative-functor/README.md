@@ -163,4 +163,18 @@ Files are in [app](./app) directory
     ```
     if you call `fmap (*) (Just 3)`, then it returns `Just ((*) 3)` or `Just (3 *)`, and this is function wrapped with `Just`
 
+- Applicative
 
+    `Control.Applicative` has `Applicative` Type Class which has two function `pure` and `<*>`
+    
+    ```
+    class (Functor f) => Applicative f where
+        pure :: a -> f a
+        (<*>) :: f (a -> b) -> f a -> f b
+    ```
+    `f` must be `Functor`, `pure` makes Type to `Applicative Functor`. 
+    `<*>` is advanced version of `fmap`.
+    
+- Maybe Applicative
+
+    
