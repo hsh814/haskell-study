@@ -177,4 +177,118 @@ Files are in [app](./app) directory
     
 - Maybe Applicative
 
+    ```
+    instance Applicative Maybe where
+        pure = Just
+        Nothing <*> _ = Nothing
+        (Just f) <*> something = fmap f something
+    ```
+    
+    example
+    ```
+    Prelude> Just (+3) <*> Just 9
+    Just 12
+    Prelude> pure (+3) <*> Just 10
+    Just 13
+    Prelude> pure (+3) <*> Just 9
+    Just 12
+    Prelude> Just (++ "haha") <*> Nothing
+    Nothing
+    Prelude> Nothing <*> Just "hahahaj"
+    Nothing
+    ```
+    `Just (+3)` and `pure (+3)` works same way: if you use `Maybe`, then use `pure`
+    
+    
+    
+- Applicative Style
+
+    You can use multiple `<*>` to deal with multiple Applicatives.
+    
+    ```
+    Prelude> pure (+) <*> Just 3 <*> Just 5
+    Just 8
+    Prelude> pure (+) <*> Just 3 <*> Nothing
+    Nothing
+    Prelude> pure (+) <*> Nothing <*> Just 5
+    Nothing
+    ```
+        
+    `<*>` is left-associative: 
+    
+    `pure (+) <*> Just 3 <*> Just 5` is equal to
+    
+    `(pure (+) <*> Just 3) <*> Just 5`
+    
+- `<$>`: infix version of `fmap`
+    
+    ```
+    (<$>) :: (Functor f) => (a -> b) -> f a -> f b
+    f <$> x = fmap f x
+    ```
+  
+    example
+    ```
+    Prelude> (++) <$> Just "anna" <*> Just "elsa"
+    Just "annaelsa"
+    Prelude> (++) "anna" "elsa"
+    "annaelsa"
+    ```
+    
+    `f <$> x <*> y <*> z` is similar to non-functor version `f x y z`
+    
+- Other Applicative Functor 
+    * List
+        
+        List([]) is Also Applicative Functor
+        
+        ```
+        instance Applicative [] where
+            pure x = [x]
+            (<*>) :: [a -> b] -> [a] -> [b]
+            fs <*> xs = [f x | f <- fs, x <- xs]
+        ```    
+      
+        example
+        
+        ```
+        Prelude> pure "Hey" :: [String]
+        ["Hey"]
+        Prelude> pure "Hey" :: Maybe String
+        Just "Hey"
+        ```
+        
+        Let's use them
+        ```
+        Prelude> [(*0), (+100), (^2)] <*> [1..4]
+        [0,0,0,0,101,102,103,104,1,4,9,16]
+        ```
+      
+        Apply two functions to two lists
+        ```
+        Prelude> [(+), (*)] <*> [1,2] <*> [3,4]
+        [4,5,5,6,3,4,6,8]
+        ```
+        `<$>` example
+        ```
+        Prelude> (++) <$> ["ha", "heh", "hmm"] <*> ["~", "!"]
+        ["ha~","ha!","heh~","heh!","hmm~","hmm!"]
+        ```
+        
+        Nondeterministic computation: unlike 100 or "hello", 
+        [1,2,3] can show all the results which cannot be determined 
+        <br>
+        
+    * IO
+        ```
+        instance Applicative IO where
+            pure = return
+            a <*> b = do
+                f <- a
+                x <- b
+                return (f x)
+        ```
+        
+        
+    
     
