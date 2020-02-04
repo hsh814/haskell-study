@@ -283,12 +283,52 @@ Files are in [app](./app) directory
         ```
         instance Applicative IO where
             pure = return
+            (<*>) :: IO (a -> b) -> IO a -> IO b
             a <*> b = do
                 f <- a
                 x <- b
                 return (f x)
         ```
         
+        `return` is IO process doing nothing
+    
+        sequencing: it combine two IO into one.
+        ``` 
+        myAction :: IO String
+        myAction = do
+            a <- getLine
+            b <- getLine
+            return $ a ++ b
+        ```
+        is equal to
+        ```
+        myAction :: IO String
+        myAction = (++) <$> getLine <*> getLine
+        ```
         
+- Applicative function: `(->) r`
+    
+    ``` 
+    instance Applicative ((->) r) where
+        pure x = (\_ -> x)
+        f <*> g = \x -> f x (g x)    
+    ```
+  
+    `pure` ignores parameter
+    ```
+    Prelude> (pure 3) "blah"
+    3
+    Prelude> pure 3 "blah"
+    3
+    ```
+  
+    `<*>`
+    ```
+    Prelude> :t (+) <$> (+3) <*> (*100)
+    (+) <$> (+3) <*> (*100) :: Num b => b -> b
+    Prelude> (+) <$> (+3) <*> (*100) $ 5
+    508
+    ```
+    
     
     
