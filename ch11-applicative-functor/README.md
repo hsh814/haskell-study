@@ -328,7 +328,49 @@ Files are in [app](./app) directory
     (+) <$> (+3) <*> (*100) :: Num b => b -> b
     Prelude> (+) <$> (+3) <*> (*100) $ 5
     508
+  
+    Prelude> (\x y z -> [x,y,z]) <$> (+3) <*> (*2) <*> (/2) $ 5
+    [8.0,10.0,2.5]
+    ```
+    
+- ZipList
+    
+    example) `[(+3), (*2)] <*> [1,2] == [4,5,2,4]`
+    
+    If you want to make `[4,4]` instead of `[4,5,2,4]`, 
+    then you can use `ZipList`
+    
+    ```
+    instance Applicative ZipList where
+        pure x = ZipList (repeat x)
+        ZipList fs <*> ZipList xs = ZipList (zipWith (\f x -> f x) fs xs)
+    ```
+    
+    It means first function is applied to first element, and second function is applied to second element...
+    
+    `pure` returns infinite list
+    
+    `pure "haha" == ZipList (["haha", "haha", ..])`
+    
+    this is because the ZipList works with shorter list
+    
+    ```
+    Prelude Control.Applicative> (+) <$> ZipList [1,2,3] <*> ZipList [100,100,100]
+    ZipList {getZipList = [101,102,103]}
+    Prelude Control.Applicative> getZipList $ (+) <$> ZipList [1,2,3] <*> ZipList [100,100,100]
+    [101,102,103]
+    Prelude Control.Applicative> getZipList $ (+) <$> ZipList [1,2,3] <*> ZipList [100,100,100,100,100,100]
+    [101,102,103]
     ```
     
     
+- ApplicativeRule
+
+1. `pure id <*> v = v`
+
+2. `pure (.) <*> u <*> v <*> w - u <*> (v <*> w)`
+
+3. `pure f <*> pure x = pure (f x)`
+
+4. `u <*> pure y = pure ($y) <*> u`
     
