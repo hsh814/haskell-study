@@ -35,3 +35,5 @@
 
 ## [ch11-applicative-functor](./ch11-applicative-functor)
 
+## [ch12-monoid](./ch12-monoid)
+
