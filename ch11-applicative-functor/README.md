@@ -373,4 +373,66 @@ Files are in [app](./app) directory
 3. `pure f <*> pure x = pure (f x)`
 
 4. `u <*> pure y = pure ($y) <*> u`
-    
+
+
+## [UsefulApplicative](./app/UsefulApplicative.hs)
+
+- `liftA2`
+```
+liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
+liftA2 f a b = f <$> a <*> b
+```
+
+example
+```
+*Main> fmap (\x -> [x]) (Just 4)
+Just [4]
+*Main> liftA2 (:) (Just 3) (Just [4])
+Just [3,4]
+*Main> (:) <$> Just 3 <*> Just [4]
+Just [3,4]
+```
+
+- `sequenceA`
+```
+sequenceAA :: (Applicative f) => [f a] -> f [a]
+sequenceAA [] = pure []
+sequenceAA (x:xs) = (:) <$> x <*> sequenceAA xs
+```
+```
+*Main> sequenceAA [Just 1, Just 5, Just 7]
+Just [1,5,7]
+*Main> sequenceAA [Just 1, Nothing, Just 7]
+Nothing
+```
+when `Maybe` is used, `sequenceA` make every value in list `Maybe` type.
+
+Also, you can use it for list of functions
+
+```
+*Main> map (\f -> f 7) [(>4), (<10), odd]
+[True,True,True]
+*Main> sequenceAA [(>4), (<10), odd] 7
+[True,True,True]
+```
+
+`sequenceA` may be used for list comprehension
+
+```
+*Main> sequenceAA [[1,2,3],[4,5,6]]
+[[1,4],[1,5],[1,6],[2,4],[2,5],[2,6],[3,4],[3,5],[3,6]]
+*Main> sequenceAA [[1,2],[3,4],[5,6]]
+[[1,3,5],[1,3,6],[1,4,5],[1,4,6],[2,3,5],[2,3,6],[2,4,5],[2,4,6]]
+*Main> sequenceAA [[1,2,3],[4,5,6],[]]
+[]
+```
+
+IO:
+
+```
+*Main> sequenceAA [getLine, getLine, getLine]
+first
+sec
+thurd
+["first","sec","thurd"]
+```
