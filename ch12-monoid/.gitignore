@@ -1,4 +1,4 @@
 .stack-work/
-./idea
+./.idea
 ch12-monoid.cabal
 *~
