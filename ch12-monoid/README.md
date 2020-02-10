@@ -122,4 +122,96 @@ class Monoid m where
 
 - Rule of monoid
 
+1. `mappend mempty x = x`
+
+2. `mappend x mempty = x`
+
+3. `mappend (mappend x y) z = mappend x (mappend y z)`
+
+1, 2: x is identifier
+
+3: associative
+
+
+## [MonoidInstances](./app/MonoidInstances.hs)
+
+- list
+```
+instance Monoid [a] where
+    mempty = []
+    mappend = (++)
+```
+
+```
+*Main> mappend [1,2,3] [4,5,6]
+ [1,2,3,4,5,6]
+```
+
+`mappend a b` need not be same as `mappend b a`
+
+- (+), (*): Sum, Product
+
+Obviously...
+
+```
+newtype Product a = Product { getProduct :: a }
+    deriving (Eq, Ord, Read, Show, Bounded
+
+instance Num a => Monoid (Product a) where
+    mempty = Product 1
+    mappend (Product x) (Product y) = Product (x * y)
+```
+Sum is similar
+```
+*Main> getProduct $ mappend (Product 3) (Product 9)
+27
+*Main> getProduct $ mappend (Product 3) mempty
+3
+*Main> getProduct . mconcat . map Product $ [2,3,4]
+24
+
+*Main> getSum $ mappend (Sum 2) (Sum 1)
+3
+*Main> getSum $ mappend (Sum 5) mempty
+5
+*Main> getSum . mconcat . map Sum $ [1,2,3]
+6
+```
+
+- Any, All :: Bool
+
+`Any` is or
+```
+newtype Any = Any { getAny :: Bool }
+    deriving (Eq, Ord, Read, Show, Bounded)
+
+instance Monoid Any where
+    mempty = Any False
+    mappend (Any  x) (Any y) = Any (x || y)
+```
+
+`All` is and
+
+```
+newtype All = All { getAll :: Bool }
+    deriving (Eq, Ord, Read, Show, Bounded)
+
+instance Monoid All where
+    mempty = All True
+    mappend (All x) (All y) = All (x && y)
+```
+
+- Ordering
+
+```
+instance Monoid Ordering where
+    mempty = EQ
+    mappend LT _ = LT
+    mappend EQ y = y
+    mappend GT _ = GT
+```
+
+Select left one if it's not EQ: 
+similar to dictionary ordering
+
 
