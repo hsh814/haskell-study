@@ -214,4 +214,55 @@ instance Monoid Ordering where
 Select left one if it's not EQ: 
 similar to dictionary ordering
 
+```
+*Main> mappend LT GT
+LT
+*Main> mappend GT LT
+GT
+*Main> mappend EQ LT
+LT
+*Main> mappend mempty GT
+GT
+```
 
+How can we use it?
+```
+lengthCompare :: String -> String -> Ordering
+lengthCompare x y =
+    let
+        a = compare (length x) (length y)
+        b = compare x y
+    in if a == EQ then b else a
+    
+lengthCompare' :: String -> String -> Ordering
+lengthCompare' x y =
+    mappend (compare (length x) (length y)) (compare x y)
+```
+`lengthCompare'` version is using fact that Ordering is Monoid
+
+```
+*Main> lengthCompare "zen" "ants"
+LT
+*Main> lengthCompare' "zen" "ant"
+GT
+```
+
+Let's add other priority
+```
+vowelCompare :: String -> String -> Ordering
+vowelCompare x y =
+    mappend (compare (length x) (length y)) 
+    (mappend (compare (vowels x) (vowels y)) (compare x y))
+    where vowels = length . filter (`elem` "aeiou")
+```
+First, it compares length
+Second, it compares number of vowels
+Last, it compares dictionary order
+```
+*Main> vowelCompare "zen" "anna"
+LT
+*Main> vowelCompare "zen" "ann"
+GT
+*Main> vowelCompare "zen" "ana"
+LT
+```
