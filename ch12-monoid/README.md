@@ -319,3 +319,67 @@ Just 9
 
 ## [FoldMonoid](./app/FoldMonoid.hs)
 
+fold can be applied to other data structures:
+
+So, `Foldable` Type Class was introduced
+
+```
+*Main> :t foldr
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+*Main> :t F.foldr
+F.foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+```
+
+`F.foldr` folds everything foldable
+
+Then, what's foldable?
+
+- `Maybe`
+```
+*Main> F.foldl (+) 2 (Just 9)
+11
+*Main> F.foldl (||) False (Just True)
+True
+```
+`Maybe` is actually foldable: `Just a` works just like list with single element
+and `Nothing` works like empty list
+
+- Tree
+
+```
+data Tree a = 
+    EmptyTree | Node a (Tree a) (Tree a) 
+    deriving (Show)
+```
+
+how to make it foldable? Easy way is to implement `foldMap`
+
+`foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m`
+
+```
+instance F.Foldable Tree where
+    foldMap f EmptyTree = mempty
+    foldMap f (Node x l r) =
+        (F.foldMap f l) `mappend` (f x) `mappend` (F.foldMap f r)
+```
+
+example using testTree in FoldMonoid.hs
+
+```
+*Main> F.foldl (+) 0 testTree
+42
+*Main> F.foldl (*) 1 testTree
+64800
+```
+You can also use 
+
+```
+*Main> getAny $ F.foldMap (\x -> Any $ x == 3) testTree
+True
+*Main> getAny $ F.foldMap (\x -> Any $ x > 10) testTree
+False
+*Main> F.foldMap (\x -> [x]) testTree
+[1,3,6,5,8,9,10]
+```
+
+It works every Foldable Instances!
