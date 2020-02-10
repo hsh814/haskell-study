@@ -2,6 +2,12 @@
 
 Files are in [app](./app) directory
 
+## Contents
+- [Functors](#Functors)
+- [FunctorRule](#FunctorRule)
+- [ApplicativeFunctor](#ApplicativeFunctor)
+- [UsefulApplicatives](#UsefulApplicatives)
+
 ## [Functors](./app/Functors.hs)
 
 - IO
