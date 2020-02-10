@@ -1,5 +1,11 @@
 # ch12-monoid
 
+## Contents
+- [NewType](#NewType)
+- [Monoid](#Monoid)
+- [MonoidInstances](#MonoidInstances)
+- [FoldMonoid](#FoldMonoid)
+
 ## [NewType](./app/NewType.hs)
 
 `data ZipList a = ZipList {getZipList :: [a]}`
@@ -266,3 +272,50 @@ GT
 *Main> vowelCompare "zen" "ana"
 LT
 ```
+
+- `Maybe` Monoid
+
+```
+instance Monoid a => Monoid (Maybe a) where
+    mempty = Nothing
+    mappend Nothing m = m
+    mappend m Nothing = m
+    mappend (Just m1) (Just m2) = Just (mappend m1 m2) 
+```
+
+For Maybe a, a must be Monoid's Instance
+```
+*Main> mappend ( Just "anna") (Just "elsa")
+Just "annaelsa"
+*Main> Just (Sum 3) `mappend` Just (Sum 5)
+Just (Sum {getSum = 8})
+```
+
+It's useful for fail-able monoid calculation.
+
+But what if a is not Monoid?: Easy way is only take first value
+
+```
+newtype First a = First { getFirst :: Maybe a }
+    deriving (Eq, Ord, Read, Show)
+
+instance Monoid (First a) where
+    mempty = First Nothing
+    mappend (First (Just x)) _ = First (Just x)
+    mappend (First Nothing) x = x
+```
+If first is Nothing, it take second value
+
+```
+*Main> getFirst $ First (Just 'a') `mappend` First (Just 'b')
+Just 'a'
+*Main> getFirst $ First Nothing `mappend` First (Just 'b')
+Just 'b'
+*Main> getFirst $ First (Just 'a') `mappend` First Nothing
+Just 'a'
+*Main> getFirst . mconcat . map First $ [Nothing, Just 9, Just 10, Nothing, Just 13]
+Just 9
+```
+
+## [FoldMonoid](./app/FoldMonoid.hs)
+
