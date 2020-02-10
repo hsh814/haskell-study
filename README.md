@@ -37,3 +37,4 @@
 
 ## [ch12-monoid](./ch12-monoid)
 
+## [ch13-monad](./ch13-monad)
