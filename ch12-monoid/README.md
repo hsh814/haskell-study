@@ -96,3 +96,30 @@ use `++` for two `[Char]`, and rebuild it into `CharList`
 
 ## [Monoid](./app/Monoid.hs)
 
+`*` : get two parameters, multiply them -> `* 1` : same
+
+`++` : get two lists, add them -> `++ []` : same
+
+there are some common thing between `1` and `[]`:
+associativity
+
+- `Monoid`
+
+```
+module Data.Monoid ( Monoid ) where
+class Monoid m where
+    mempty :: m
+    mappend :: m -> m -> m
+    mconcat :: [m] -> m
+    mconcat = foldr mappend mempty
+```
+
+1. `mempty` : It's not a real function: no parameter
+
+2. `mappend` : Binary function
+
+3. `mconcat` : The most important function: it has default
+
+- Rule of monoid
+
+
