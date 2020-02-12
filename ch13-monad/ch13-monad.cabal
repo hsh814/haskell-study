@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8272a88fca8341c874ba9ba27e28471d00ac957c1dd429408ee9d4af3bae8ab6
+-- hash: a4c317ec535665fdbc3dbcd4c7ad39f8d91f89193b4994d6e809bef156ea7886
 
 name:           ch13-monad
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
 executable ch13-monad-exe
   main-is: Main.hs
   other-modules:
+      Maybe
       Paths_ch13_monad
   hs-source-dirs:
       app
