@@ -3,6 +3,7 @@
 ## Contents
 - [Maybe](#Maybe)
 - [Monad](#Monad)
+- [DoNotation](#DoNotation)
 
 ## [Maybe](./app/Maybe)
 
@@ -137,7 +138,8 @@ Nothing
 ```
 
 - wirewalking: how to deal with fail-prone context
-  -- introduction
+  
+  * introduction
     
 Let's think Pierre try to wirewalk. When he uses stick, some birds sit on it. 
 
@@ -175,7 +177,7 @@ He will fall in these cases:
 ```
 In second case, the difference became over 3
 
-  -- `Maybe`
+  * `Maybe`
     
 Let's add `Maybe` context
 ```
@@ -202,7 +204,7 @@ Nothing
 
 It works well, but you can't use it consecutively anymore...
 
-  -- `Monad`
+  * `Monad`
     
 ```
 *Main> landright 1 (0,0) >>= landleft 2
@@ -222,15 +224,47 @@ Nothing
 
 If there are failure in process, it returns Nothing.
 
-  -- `banana`
+  * `banana`
     
-Let's make function that ignores context: 
-`banana` on the wire make always falls Pierre fall.
-
 ```
 banana :: Stick -> Maybe Stick
 banana _ = Nothing
 ```
+Let's make function that ignores context: 
+`banana` on the wire make always falls Pierre fall.
+
+```
+*Main> return (0,0) >>= landleft 1 >>= banana >>= landright 1
+Nothing
+```
+
+Or we can just use `>>` instead: `x >> y = x >>= \_ -> y`
+
+```
+*Main> Nothing >> Just 3
+Nothing
+*Main> Just 3 >> Just 4
+Just 4
+*Main> Just 3 >> Nothing
+Nothing
+
+*Main> return (0,0) >>= landleft 1 >> Nothing >>= landright 1
+Nothing
+```
+
+## [DoNotation](./app/DoNotation.hs)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
