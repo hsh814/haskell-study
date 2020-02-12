@@ -137,7 +137,7 @@ Nothing
 ```
 
 - wirewalking: how to deal with fail-prone context
-    - introduction
+  -- introduction
     
 Let's think Pierre try to wirewalk. When he uses stick, some birds sit on it. 
 
@@ -175,7 +175,7 @@ He will fall in these cases:
 ```
 In second case, the difference became over 3
 
-    - `Maybe`
+  -- `Maybe`
     
 Let's add `Maybe` context
 ```
@@ -202,7 +202,7 @@ Nothing
 
 It works well, but you can't use it consecutively anymore...
 
-    - `Monad`
+  -- `Monad`
     
 ```
 *Main> landright 1 (0,0) >>= landleft 2
@@ -222,7 +222,7 @@ Nothing
 
 If there are failure in process, it returns Nothing.
 
-    - `banana`
+  -- `banana`
     
 Let's make function that ignores context: 
 `banana` on the wire make always falls Pierre fall.
