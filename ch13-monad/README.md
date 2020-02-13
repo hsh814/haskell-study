@@ -4,6 +4,7 @@
 - [Maybe](#Maybe)
 - [Monad](#Monad)
 - [DoNotation](#DoNotation)
+- [ListMonad](#ListMonad)
 
 ## [Maybe](./app/Maybe)
 
@@ -317,7 +318,76 @@ overEight = do
     Just (x > 8)
 ```
 
+- wirewalking
 
+in [app/Monad.hs](./app/Monad.hs)
+
+```
+routine :: Maybe Stick
+routine = do
+    start <- return (0,0)
+    first <- landleft 2 start
+    second <- landright 2 first
+    landleft 1 second
+```
+
+```
+*Main> routine
+Just (3,2)
+```
+He's doing well.
+
+In do statement, each code line depends on previous one: up to bottom.
+
+Without monad, you should write it this way.
+```
+routine1 :: Maybe Stick
+routine1 = 
+    case Just (0,0) of
+        Nothing -> Nothing
+        Just start -> case landleft 2 start of
+            Nothing -> Nothing
+            Just first -> case landright 2 first of
+                Nothing -> Nothing
+                Just second -> landleft 1 second
+```
+
+- Pattern matching and failure
+
+```
+justH :: Maybe Char
+justH = do
+    (x:xs) <- Just "hello"
+    return x
+```
+
+To get 'h', we used pattern matching. What if it fails?
+
+```
+fail :: (Monad m) => String -> m a
+fail msg = error msg
+```
+
+We use fail function. But `Maybe` has its own implementation.
+
+`fail _ = Nothing`
+
+```
+gonnaFail :: Maybe Char
+gonnaFail = do
+    (x:xs) <- Just ""
+    return x
+```
+This contains fail.
+
+```
+*Main> gonnaFail
+Nothing
+```
+It returns Nothing.
+
+
+## [ListMonad](./app/ListMonad.hs)
 
 
 1

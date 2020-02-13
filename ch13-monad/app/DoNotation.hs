@@ -15,3 +15,13 @@ overEight :: Maybe Bool
 overEight = do
     x <- Just 9
     Just (x > 8)
+
+justH :: Maybe Char
+justH = do
+    (x:xs) <- Just "hello"
+    return x
+
+gonnaFail :: Maybe Char
+gonnaFail = do
+    (x:xs) <- Just ""
+    return x

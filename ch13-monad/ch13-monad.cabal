@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b0e2474ee5ac4dcd6c37b206e60bc0edd5c8700f93d25845449e44632f31bcd
+-- hash: e0db1ce59e11169768abf37eee0c9ba4f7d79923d63eec22308ac3720fd5d7e9
 
 name:           ch13-monad
 version:        0.1.0.0
@@ -40,6 +40,7 @@ executable ch13-monad-exe
   main-is: Main.hs
   other-modules:
       DoNotation
+      ListMonad
       Maybe
       Monad
       Paths_ch13_monad
