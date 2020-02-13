@@ -256,15 +256,74 @@ Nothing
 
 - do
 
-do notation
+do notation is special statement for monad: we already shown this in chapter 8 -IO. 
+
+```
+Prelude> Just 3 >>= (\x -> Just (show x ++ "!"))
+Just "3!"
+```
+
+Then, how about `>>=` is already in lambda?
+
+```
+Prelude> Just 3 >>= (\x -> Just "!" >>= (\y -> Just (show x ++ y)))
+Just "3!"
+
+Prelude> Nothing >>= (\x -> Just (show x ++ "!"))
+Nothing
+Prelude> Just 3 >>= (\x -> Nothing >>= (\y -> Just (show x ++ y)))
+Nothing
+```
+
+It's like let notation
+
+```
+Prelude> let x = 3; y = "!" in show x ++ y
+"3!"
+```
+
+The difference is monad can fail.
+```
+foo0 :: Maybe String
+foo0 = 
+    Just 3 >>= (\x ->
+    Just "!" >>= (\y ->
+        Just (show x ++ y)))
+```
+This can be written in do notation
+
+```
+foo :: Maybe String
+foo = do
+    x <- Just 3
+    y <- Just "!"
+    Just (show x ++ y)
+```
+It's more simple!
+
+- let
+
+In do notation, everything not in let block is monad.
+
+To see result, we use `<-`.
+
+```
+Prelude> Just 9 >>= (\x -> Just (x > 8))
+Just True
+
+overEight :: Maybe Bool
+overEight = do
+    x <- Just 9
+    Just (x > 8)
+```
 
 
 
 
+1
 
+1
 
+1
 
-
-
-
-
+- some
