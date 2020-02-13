@@ -8,7 +8,7 @@
 
 ## [Maybe](./app/Maybe)
 
-What is monad?
+### What is monad?
 
 Functor -> Applicative Functor -> Monad!
 
@@ -26,7 +26,7 @@ Monad: extension of Applicative: with a, returns value with context
 
 `>>=` is called bind: with context and normal value, it returns contexted value
 
-- `Maybe`
+### `Maybe`
 
 `Maybe` is monad! 
 
@@ -86,6 +86,7 @@ Not that special...
 
 ## [Monad](./app/Monad.hs)
 
+### Monad class
 ```
 class Monad m where
     return :: a -> m a
@@ -117,7 +118,7 @@ It accept monad value and put it in function that get normal value and returns m
 
 4. `fail`: handling error
 
-- `Maybe`: instance of `Monad`
+### `Maybe`: instance of `Monad`
 
 ```
 instance Monad Maybe where
@@ -138,7 +139,7 @@ Prelude> Nothing >>= \x -> return (x*10)
 Nothing
 ```
 
-- wirewalking: how to deal with fail-prone context
+### wirewalking: how to deal with fail-prone context
   
   * introduction
     
@@ -255,7 +256,7 @@ Nothing
 
 ## [DoNotation](./app/DoNotation.hs)
 
-- do
+### do
 
 do notation is special statement for monad: we already shown this in chapter 8 -IO. 
 
@@ -302,7 +303,7 @@ foo = do
 ```
 It's more simple!
 
-- let
+### let
 
 In do notation, everything not in let block is monad.
 
@@ -318,7 +319,7 @@ overEight = do
     Just (x > 8)
 ```
 
-- wirewalking
+### wirewalking
 
 in [app/Monad.hs](./app/Monad.hs)
 
@@ -352,7 +353,7 @@ routine1 =
                 Just second -> landleft 1 second
 ```
 
-- Pattern matching and failure
+### Pattern matching and failure
 
 ```
 justH :: Maybe Char
@@ -388,6 +389,8 @@ It returns Nothing.
 
 
 ## [ListMonad](./app/ListMonad.hs)
+
+### first
 
 
 1
