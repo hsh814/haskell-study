@@ -390,7 +390,62 @@ It returns Nothing.
 
 ## [ListMonad](./app/ListMonad.hs)
 
-### first
+### list
+
+```
+instance Monad [] where
+    return x = [x]
+    xs >>= f = concat (map f xs)
+    fail _ = []
+```
+
+list can have undecisive value.
+
+```
+*Main> (*) <$> [1,2,3] <*> [10,100,1000]
+[10,100,1000,20,200,2000,30,300,3000]
+*Main> [3,4,5] >>= (\x -> [x,-x])
+[3,-3,4,-4,5,-5]
+```
+
+It like list comprehension: why?
+```
+*Main> fmap (\x -> [x,-x]) [3,4,5]
+[[3,-3],[4,-4],[5,-5]]
+```
+
+If you use ordinary function, result is like list in list.
+
+List also has fail
+```
+*Main> [] >>= \x -> ["hi","the","su"]
+[]
+```
+
+### list comprehension
+
+```
+*Main> [ (n, ch) | n <- [1,2], ch <- ['a','b'] ]
+[(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+
+*Main> [1,2] >>= \n -> ['a','b'] >>= \ch -> return (n,ch)
+[(1,'a'),(1,'b'),(2,'a'),(2,'b')]
+```
+
+You can write this in do statement
+```
+listOfTuples :: [(Int, Char)]
+listOfTuples = do
+    n <- [1,2]
+    ch <- ['a','b']
+    return (n, ch)
+```
+
+Actually, list comprehension is one of syntatic sugar to use monad in list.
+
+### MonadPlus and guard
+
+
 
 
 1
