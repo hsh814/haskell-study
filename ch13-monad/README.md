@@ -5,6 +5,7 @@
 - [Monad](#Monad)
 - [DoNotation](#DoNotation)
 - [ListMonad](#ListMonad)
+- [MonadRule](#MonadRule)
 
 ## [Maybe](./app/Maybe)
 
@@ -445,6 +446,134 @@ Actually, list comprehension is one of syntatic sugar to use monad in list.
 
 ### MonadPlus and guard
 
+How to filter elements in list?
+
+```
+*Main> [x | x <- [1..100], '5' `elem` show x]
+[5,15,25,35,45,50,51,52,53,54,55,56,57,58,59,65,75,85,95]
+```
+
+`MonadPlus` Type Class is for monad that can act like monoid. It's in `Control.Monad`
+
+```
+class Monad m => MonadPlus m where
+    mzero :: m a
+    mplus :: m a -> m a -> m a
+```
+`mzero` is similar to `mempty` in monoid.
+
+`mplus` is `mappend` in monoid.
+
+list:
+
+```
+instance MonadPlus [] where
+    mzero = []
+    mplus = (++)
+```
+
+```
+guard :: (MonadPlus m) => Bool -> m ()
+guard True = return ()
+guard False = mzero
+```
+
+`guard` use Bool
+
+if True: it returns least default context
+
+else : return failed monad.
+
+```
+*Main> guard (5 > 2) :: Maybe ()
+Just ()
+*Main> guard (1 > 2) :: Maybe ()
+Nothing
+*Main> guard (1 > 2) :: [()]
+[]
+*Main> guard (56 > 2) :: [()]
+[()]
+```
+
+You can use `guard` to filter list.
+
+```
+*Main> [1..100] >>= (\x -> guard ('5' `elem` show x) >> return x)
+[5,15,25,35,45,50,51,52,53,54,55,56,57,58,59,65,75,85,95]
+
+*Main> guard (5 > 2) >> return "cool" :: [String]
+["cool"]
+*Main> guard (1 > 2) >> return "cool" :: [String]
+[]
+```
+You can write this in do notation
+
+```
+onlyFives :: [Int]
+onlyFives = do
+    x <- [1..100]
+    guard ('5' `elem` show x)
+    return x
+```
+
+### Knight
+
+How to figure out whether the knight can move to specific location in 3 moves?
+
+```
+type KnightPos = (Int, Int)
+
+moveKnight :: KnightPos -> [KnightPos]
+moveKnight (c, r) = do
+    (c', r') <- [(c+2, r-1), (c+2, r+1), (c-2, r-1), (c-2, r+1),
+                (c+1, r+2), (c+1, r-2), (c-1, r+2), (c-1, r-2)]
+    guard (c' `elem` [1..8] && r' `elem` [1..8])
+    return (c', r')
+```
+
+```
+*Main> moveKnight (6,2)
+[(8,1),(8,3),(4,1),(4,3),(7,4),(5,4)]
+```
+
+We can make list of position in three move
+
+```
+inThree :: KnightPos -> [KnightPos]
+inThree start = do
+    first <- moveKnight start
+    second <- moveKnight first
+    moveKnight second
+```
+
+or
+
+```
+in3 :: KnightPos -> [KnightPos]
+in3 start = return start >>= moveKnight >>= moveKnight >>= moveKnight
+```
+
+```
+*Main> in3 (6,2)
+[(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(5,2),(5,4),(8,5),(8,1),(6,5),(6,1),(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(8,3),(8,5),(4,3),(4,5),(7,6),(7,2),(5,6),(5,2),(5,4),(5,6),(8,7),(8,3),(6,7),(6,3),(5,2),(8,3),(6,3),(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(4,1),(4,3),(3,4),(1,4),(7,2),(7,4),(3,2),(3,4),(6,5),(6,1),(4,5),(4,1),(5,2),(5,4),(1,2),(1,4),(4,5),(4,1),(2,5),(2,1),(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(8,3),(8,5),(4,3),(4,5),(7,6),(7,2),(5,6),(5,2),(4,1),(4,3),(3,4),(1,4),(4,3),(4,5),(3,6),(3,2),(1,6),(1,2),(7,4),(7,6),(3,4),(3,6),(6,7),(6,3),(4,7),(4,3),(7,2),(3,2),(6,3),(4,3),(5,4),(5,6),(1,4),(1,6),(4,7),(4,3),(2,7),(2,3),(5,2),(1,2),(4,3),(2,3),(7,2),(7,4),(3,2),(3,4),(6,5),(6,1),(4,5),(4,1),(7,4),(7,6),(3,4),(3,6),(6,7),(6,3),(4,7),(4,3),(6,5),(6,7),(7,8),(7,4),(6,1),(6,3),(7,4),(8,5),(8,7),(4,5),(4,7),(7,8),(7,4),(5,8),(5,4),(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(5,2),(5,4),(8,5),(8,1),(6,5),(6,1),(5,4),(5,6),(8,7),(8,3),(6,7),(6,3),(5,2),(5,4),(1,2),(1,4),(4,5),(4,1),(2,5),(2,1),(5,4),(5,6),(1,4),(1,6),(4,7),(4,3),(2,7),(2,3),(8,5),(8,7),(4,5),(4,7),(7,8),(7,4),(5,8),(5,4),(8,1),(8,3),(4,1),(4,3),(7,4),(5,4),(6,5),(6,7),(2,5),(2,7),(5,8),(5,4),(3,8),(3,4),(6,1),(6,3),(2,1),(2,3),(5,4),(3,4)]
+```
+result is very long since it does not remove duplicate values.
+
+Now, we can determine if knight can reach certain position.
+
+```
+canReachIn3 :: KnightPos -> KnightPos -> Bool
+canReachIn3 start end = end `elem` in3 start
+```
+
+```
+*Main> canReachIn3 (6,2) (3,4)
+True
+*Main> canReachIn3 (6,2) (3,3)
+False
+```
+
+## [MonadRule](./app/MonadRule.hs)
 
 
 

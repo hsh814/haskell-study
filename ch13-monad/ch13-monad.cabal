@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0db1ce59e11169768abf37eee0c9ba4f7d79923d63eec22308ac3720fd5d7e9
+-- hash: d49752d9c4952f80d1c99add18a255dc136cf44fed6f0ed708bccfaedf781472
 
 name:           ch13-monad
 version:        0.1.0.0
@@ -43,6 +43,7 @@ executable ch13-monad-exe
       ListMonad
       Maybe
       Monad
+      MonadRule
       Paths_ch13_monad
   hs-source-dirs:
       app
