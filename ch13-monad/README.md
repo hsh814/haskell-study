@@ -575,12 +575,83 @@ False
 
 ## [MonadRule](./app/MonadRule.hs)
 
+### 1. left identity element: return
 
+`return x >>= f` is equal to `f x`
 
-1
+example) `Maybe`
 
-1
+```
+Prelude> return 3 >>= (\x -> Just (x + 100))
+Just 103
+Prelude> (\x -> Just (x + 100)) 3
+Just 103
+```
 
-1
+example) list
+```
+Prelude> return "pwm" >>= (\x -> [x,x,x])
+["pwm","pwm","pwm"]
+Prelude> (\x -> [x,x,x]) "pwm"
+["pwm","pwm","pwm"]
+```
 
-- some
+### 2. right identity element
+
+If you pass monad into return, it does not change
+
+```
+Prelude> Just "move on up" >>= (\x -> return x)
+Just "move on up"
+Prelude> [1,2,3,4] >>= (\x -> return x)
+[1,2,3,4]
+Prelude> putStrLn "What" >>= (\x -> return x)
+What
+```
+
+`>>=` is implemented like
+
+```
+xs >>= f = concat (map f xs)
+```
+
+`concat` accepts a list of list and concatenates them.
+
+### 3. Associated law
+
+`(m >>= f) >>= g` is equal to `m >>= (\x -> f x >>= g)`
+
+ex)
+```
+*Main> return (0,0) >>= landright 2 >>= landleft 3 >>= landright 2
+Just (3,4)
+
+*Main> ((return (0,0) >>= landright 2) >>= landleft 3) >>= landright 2
+Just (3,4)
+
+*Main> return (0,0) >>= (\x -> landright 2 x >>= (\y -> landleft 3 y >>= (\z -> landright 2 z)))
+Just (3,4)
+```
+
+### `<=<`
+
+```
+(.) :: (b -> c) -> (a -> b) -> (a -> c)
+f . g = (\x -> f (g x))
+```
+What if two functions are monads?
+
+```
+(<=<) :: (Monad m) => (b -> m c) -> (a -> m b) -> (a -> m c)
+f <=< g = (\x -> g x >>= f)
+```
+
+```
+*Main> let f x = [x,-x]
+*Main> let g x = [x*3, x*2]
+*Main> let h = f <=< g
+*Main> h 3
+[9,-9,6,-6]
+```
+
+By associative rule, `f <=< (g <=< h)` is equal to `(f <=< g) <=< h`
