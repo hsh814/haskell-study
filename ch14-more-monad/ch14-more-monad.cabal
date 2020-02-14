@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0687e5b333cefaa386fd397542de79df322eb2328c7b85a00d9e1043e63debbb
+-- hash: dc133a47ad34b297cf902b499ef504c0e79a30ff638b41b76c3d1d359d620661
 
 name:           ch14-more-monad
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
 executable ch14-more-monad-exe
   main-is: Main.hs
   other-modules:
+      Writer
       Paths_ch14_more_monad
   hs-source-dirs:
       app
