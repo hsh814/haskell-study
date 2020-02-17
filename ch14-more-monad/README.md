@@ -9,6 +9,7 @@ ghc-pkg list | grep mtl
 
 ## Contents
 - [Writer](#Writer)
+- [LogInProgram](#LogInProgram)
 
 ## [Writer](./app/Writer.hs)
 
@@ -96,6 +97,75 @@ addDrink _ = ("beer", Sum 30)
 ```
 newtype Writer w a = Writer { runWriter :: (a, w) }
 ```
+
+It's in `Control.Monad.Writer`
+
+```
+instance (Monoid w) => Monad (Writer w) where
+    return x = Writer (x, mempty)
+    (Writer (x, v)) >>= f = let (Writer (y, v')) = f x in Writer (y, v `mappend` v')
+```
+
+`>>=` is like `applyLog`: except tuple is wrapped with `Writer`, so you should unwrap this. 
+
+```
+*Main Control.Monad.Writer> runWriter (return 3 :: Writer String Int)
+(3,"")
+*Main Control.Monad.Writer> runWriter (return 3 :: Writer (Sum Int) Int)
+(3,Sum {getSum = 0})
+*Main Control.Monad.Writer> runWriter (return 3 :: Writer (Product Int) Int)
+(3,Product {getProduct = 1})
+```
+
+### do
+
+We can use do notation.
+
+```
+import Control.Monad.Writer
+
+logNumber :: Int -> Writer [String] Int
+logNumber x = writer (x, ["Got number: " ++ show x])
+
+multWithLog :: Writer [String] Int
+multWithLog = do
+    a <- logNumber 3
+    b <- logNumber 5
+    return (a * b)
+```
+
+```
+*Main Control.Monad.Writer> runWriter multWithLog
+(15,["Got number: 3","Got number: 5"])
+```
+
+You can add another line
+
+```
+multWithLog :: Writer [String] Int
+multWithLog = do
+    a <- logNumber 3
+    b <- logNumber 5
+    tell ["Gonna multiply these two"]
+    return (a * b)
+```
+
+```
+*Main Control.Monad.Writer> runWriter multWithLog
+(15,["Got number: 3","Got number: 5","Gonna multiply these two"])
+```
+
+## [LogInProgram](./app/LogInProgram.hs)
+
+### gcd
+
+```
+gcd' :: Int -> Int -> Int
+gcd' a b =
+    | b == 0 = a
+    | otherwise gcd' b (a `mod` b)
+```
+
 
 
 

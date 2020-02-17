@@ -47,6 +47,7 @@ executable ch14-more-monad-exe
   build-depends:
       base >=4.7 && <5
     , ch14-more-monad
+    , mtl
   default-language: Haskell2010
 
 test-suite ch14-more-monad-test
