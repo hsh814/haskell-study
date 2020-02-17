@@ -10,6 +10,7 @@ ghc-pkg list | grep mtl
 ## Contents
 - [Writer](#Writer)
 - [LogInProgram](#LogInProgram)
+- [EfficientList](#EfficientList)
 
 ## [Writer](./app/Writer.hs)
 
@@ -161,13 +162,42 @@ multWithLog = do
 
 ```
 gcd' :: Int -> Int -> Int
-gcd' a b =
+gcd' a b
     | b == 0 = a
-    | otherwise gcd' b (a `mod` b)
+    | otherwise = gcd' b (a `mod` b)
 ```
 
+```
+*Main Control.Monad.Writer> gcd' 48 15
+3
+```
 
+### context
 
+Let's add some context.
+
+```
+gcd'' :: Int -> Int -> Writer [String] Int
+gcd'' a b
+    | b == 0 = do
+        tell ["Finished with " ++ show a]
+        return a
+    | otherwise = do
+        tell [show a ++ " % " ++ show b ++ " = " ++ show (a `mod` b)]
+        gcd'' b (a `mod` b)
+```
+
+```
+*Main Control.Monad.Writer> runWriter (gcd'' 48 15)
+(3,["48 % 15 = 3","15 % 3 = 0","Finished with 3"])
+
+*Main Control.Monad.Writer> mapM_ putStrLn $ snd $ runWriter (gcd'' 48 15)
+48 % 15 = 3
+15 % 3 = 0
+Finished with 3
+```
+
+## [EfficientList](./app/EfficientList.hs)
 
 1
 
