@@ -11,6 +11,7 @@ ghc-pkg list | grep mtl
 - [Writer](#Writer)
 - [LogInProgram](#LogInProgram)
 - [EfficientList](#EfficientList)
+- [Reader](#Reader)
 
 ## [Writer](./app/Writer.hs)
 
@@ -198,6 +199,122 @@ Finished with 3
 ```
 
 ## [EfficientList](./app/EfficientList.hs)
+
+### mappend
+
+This is efficient
+
+```
+a ++ (b ++ (c ++ d))
+```
+
+But this is inefficient
+
+```
+((a ++ b) ++ c) ++ d
+```
+
+Becuase for every time `mappend` is called, left side is reconstructed.
+
+For example,
+```
+gcdReverse :: Int -> Int -> Writer [String] Int
+gcdReverse a b
+    | b == 0 = do
+        tell ["Finished with " ++ show a]
+        return a
+    | otherwise = do
+        result <- gcdReverse b (a `mod` b)
+        tell [show a ++ " % " ++ show b ++ " = " ++ show (a `mod` b)]
+        return result
+```
+
+```
+Finished with 3
+15 % 3 = 0
+48 % 15 = 3
+```
+
+It's in reverse order: extremely inefficient.
+
+How can we resolve this?
+
+### Difference list
+
+It's list that accept a list and add another list in front of it.
+
+```
+f `append` g = \xs -> f (g xs)
+```
+
+```
+newtype DiffList a = DiffList { getDiffList :: [a] -> [a] }
+
+toDiffList :: [a] -> DiffList a
+toDiffList xs = DiffList (xs++)
+
+fromDiffList :: DiffList a -> [a]
+fromDiffList (DiffList f) = f []
+
+instance Semigroup (DDiffList a) where
+  (DDiffList f) <> (DDiffList g) = DDiffList (f <> g)
+  
+instance Monoid (DiffList a) where
+    mempty = DiffList (\xs -> [] ++ xs)
+    (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))
+```
+
+```
+*Main> fromDDiffList (toDDiffList [1,2,3,4] `mappend` toDDiffList [1,2,3])
+[1,2,3,4,1,2,3]
+```
+
+Let's apply this to gcd
+
+```
+gcd' :: Int -> Int -> Writer (DDiffList String) Int
+gcd' a b
+    | b == 0 = do
+        tell (toDDiffList ["Finished with " ++ show a])
+        return a
+    | otherwise = do
+        result <- gcd' b (a `mod` b)
+        tell (toDDiffList [show a ++ " % " ++ show b ++ " = " ++ show (a `mod` b)])
+        return result
+```
+
+```
+*Main> mapM_ putStrLn . fromDDiffList . snd . runWriter $ gcd' 110 34
+Finished with 2
+8 % 2 = 0
+34 % 8 = 2
+110 % 34 = 8
+```
+
+### Compare Performance
+
+```
+finalCountDown :: Int -> Writer (DDiffList String) ()
+finalCountDown 0 = do
+    tell (toDDiffList ["0"])
+finalCountDown x = do
+    finalCountDown (x-1)
+    tell (toDDiffList [show x])
+```
+
+It's much faster than
+
+```
+slowCountDown :: Int -> Writer [String] ()
+slowCountDown 0 = do
+    tell ["0"]
+slowCountDown x = do
+    slowCountDown (x-1)
+    tell [show x]
+```
+
+## [Reader](./Reader.hs)
+
 
 1
 
