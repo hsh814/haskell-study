@@ -376,7 +376,7 @@ So, function monad is called reader monad. Reader monad can treat function like 
 
 ## [State](./app/State.hs)
 
-### Random
+### Seed Random
 
 Some calculation may depend on state: this is called stateful.
 
@@ -418,6 +418,100 @@ push a xs = ((), a:xs)
 pop and push are stateful.
 
 push result was () since it does not have important infromation.
+
+```
+stackManip :: Stack -> (Int, Stack)
+stackManip stack = let
+    ((), newStack1) = push 3 stack
+    (a, newStack2) = pop newStack1
+    in pop newStack2
+```
+
+```
+*Main> stackManip [5,8,2,1]
+(5,[8,2,1])
+```
+
+result is 5, and new stack is [8,2,1].
+But this is too abundunt. How can we make it simple?
+
+### State Monad
+
+In `Control.Monad.State`
+
+```
+newtype State s a = State { runState :: s -> (a, s) }
+
+instance Monad (State s) where
+    return x = State $ \s -> (x, s)
+    (State h) >>= f = 
+        State $ \s ->
+            let 
+                (a, newState) = h s
+                (State g) = f a
+            in g newState
+```
+
+We can change pop and push.
+
+```
+import Control.Monad.State
+
+pop :: State Stack Int
+pop = state $ \(x:xs) -> (x, xs)
+
+push :: Int -> State Stack ()
+push a = state $ \xs -> ((), a:xs)
+
+stackManip :: State Stack Int
+stackManip = do
+    push 3
+    a <- pop
+    pop
+```
+
+```
+*Main> runState stackManip [5,8,2,1]
+(5,[8,2,1])
+```
+
+We can do more complicated work.
+
+```
+stackStuff :: State Stack ()
+stackStuff = do
+    a <- pop
+    if a == 5
+        then push 5
+        else do
+            push 3
+            push 8
+```
+
+```
+*Main> runState stackStuff [9,0,2,1,0]
+((),[8,3,0,2,1,0])
+```
+
+You can use `stackManip` and `stackStuff` in do notation since they are stateful.
+
+```
+moreStack :: State Stack ()
+moreStack = do
+    a <- stackManip
+    if a == 100
+        then stackStuff
+        else return ()
+```
+
+return () does nothing: stays same state.
+
+### MonadState
+
+
+
+
+
 
 
 
