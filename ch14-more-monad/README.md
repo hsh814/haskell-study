@@ -677,6 +677,59 @@ There are `liftM2`, `liftM3`, `liftM4`...
 
 ### `join`
 
+If monad is inside of another monad, then how can we unfold it?
+
+```
+join :: (Monad m) => m (m a) -> m a
+join mm = do
+    m <- mm
+    m
+```
+
+```
+*Main> join (Just (Just 9))
+Just 9
+*Main> join (Just Nothing)
+Nothing
+```
+
+You can apply it to list: just concat.
+
+```
+*Main> join [[1,2,3],[9,8,7],[4,5,6]]
+[1,2,3,9,8,7,4,5,6]
+```
+
+Writer, Either
+
+```
+*Main> runWriter $ join (writer (writer (1, "aaa"), "bbb"))
+(1,"bbbaaa")
+
+*Main> join (Right (Right 9)) :: Either String Int
+Right 9
+*Main> join (Right (Left "error")) :: Either String Int
+Left "error"
+*Main> join (Left "error") :: Either String Int
+Left "error"
+```
+
+join works like this.
+
+```
+joinedMaybes :: Maybe Int
+joinedMaybes = do
+    m <- Just (Just 8)
+    m
+```
+
+```
+*Main> joinedMaybes
+Just 8
+```
+
+The most interesting thing about join is `m >>= f` is equal to `join (fmap f m)`
+
 
 ### `filterM`
 
