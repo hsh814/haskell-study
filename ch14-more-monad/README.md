@@ -615,6 +615,64 @@ Right 101
 
 ### `liftM`
 
+monad -> applicative functor -> functor
+
+```
+liftM :: (Monad m) => (a -> b) -> m a -> m b
+liftM f m = m >>= (\x -> return (f x))
+
+liftM f m = do
+    x <- m
+    return (f x)
+
+fmap :: (Functor f) => (a -> b) -> f a -> f b
+```
+
+Monad don't have to depend on functor becuase of this function.
+
+```
+*Main> liftM (*3) (Just 8)
+Just 24
+*Main> fmap (*3) (Just 8)
+Just 24
+*Main> runWriter $ liftM not $ writer (True, "chickpeas")
+(False,"chickpeas")
+*Main> runWriter $ fmap not $ writer (True, "chickpeas")
+(False,"chickpeas")
+```
+
+`<$>` is applicative version of `fmap`
+and `<*>` is 
+
+```
+(<*>) :: (Applicative f) => f (a -> b) -> f a -> f b
+```
+
+monad version of `<*>` is `ap`.
+
+```
+ap :: (Monad m) => m (a -> b) -> m a -> m b
+ap mf m = do
+    f <- mf
+    x <- m
+    return (f x)
+```
+
+```
+*Main> Just (+3) <*> Just 4
+Just 7
+*Main> Just (+3) `ap` Just 4
+Just 7
+```
+
+`liftA2` is convenience function to apply function between two applicatives.
+
+```
+liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
+liftA2 f x y = f <$> x <*> y
+```
+
+There are `liftM2`, `liftM3`, `liftM4`...
 
 
 ### `join`
