@@ -315,7 +315,67 @@ slowCountDown x = do
 
 ## [Reader](./Reader.hs)
 
+### Function as `Monad`
 
+Function is `Functor`.
+
+```
+Prelude> let f = (*5)
+Prelude> let g = (+3)
+Prelude> fmap f g $ 8
+55
+```
+
+Also, Function is `Applicative`.
+
+```
+Prelude> let h = (+) <$> (*2) <*> (+10)
+Prelude> h 3
+19
+```
+
+Then, is function `Monad`? Yes, it is.
+
+```
+instance Monad ((->) r) where
+    return x = \_ -> x
+    h >>= f = \w -> f (h w) w
+```
+
+### Reader monad
+
+```
+import Control.Monad.Instances
+
+addStuff :: Int -> Int
+addStuff = do
+    a <- (*2)
+    b <- (+10)
+    return (a+b)
+```
+
+`a` and `b` both are applied to 3.
+
+```
+*Main> addStuff 3
+19
+```
+
+We can use let notation instead.
+
+```
+addStuff' :: Int -> Int
+addStuff' x = let
+    a = (*2) x
+    b = (+10) x
+    in a + b
+```
+
+So, function monad is called reader monad. Reader monad can treat function like value with context.
+
+
+
+```
 1
 
 1
@@ -333,3 +393,4 @@ slowCountDown x = do
 1
 
 1
+```
