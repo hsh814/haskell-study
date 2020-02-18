@@ -4,7 +4,7 @@
 
 - stack 2.1.3
 
-- vscode + hakero
+- vscode + haskero
 
 - Intellij IEAD + IntelliJ-Haskell
 
