@@ -15,6 +15,7 @@ ghc-pkg list | grep mtl
 - [State](#State)
 - [Error](#Error)
 - [UsefulMonads](#UsefulMonads)
+- [SafeRPN](#SafeRPN)
 
 
 ## [Writer](./app/Writer.hs)
@@ -611,6 +612,23 @@ Right 101
 ```
 
 ## [UsefulMonads](./app/UsefulMonads.hs)
+
+### `liftM`
+
+
+
+### `join`
+
+
+### `filterM`
+
+
+### `foldM`
+
+
+
+## [SafeRPN](./app/SafeRPN.hs)
+
 
 
 
