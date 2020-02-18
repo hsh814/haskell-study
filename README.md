@@ -4,7 +4,7 @@
 
 - stack 2.1.3
 
-- vscode
+- vscode + hakero
 
 - Intellij IEAD + IntelliJ-Haskell
 
@@ -40,3 +40,5 @@
 ## [ch13-monad](./ch13-monad)
 
 ## [ch14-more-monad](./ch14-more-monad)
+
+## [ch15-zipper](./ch15-zipper)
