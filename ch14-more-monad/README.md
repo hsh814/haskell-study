@@ -13,6 +13,7 @@ ghc-pkg list | grep mtl
 - [EfficientList](#EfficientList)
 - [Reader](#Reader)
 - [State](#State)
+- [Error](#Error)
 
 ## [Writer](./app/Writer.hs)
 
@@ -508,7 +509,74 @@ return () does nothing: stays same state.
 
 ### MonadState
 
+```
+get = state $ \s -> (s, s)
 
+put newState = state $ \s -> ((), newState)
+```
+
+get accept state and represent it. put accept a state and make new stateful function that replaces it.
+
+```
+stackyStack :: State Stack ()
+stackyStack = do
+    stackNow <- get
+    if stackNow == [1,2,3]
+        then put [8,3,1]
+        else put [9,2,1]
+```
+
+You can remake pop and push with get and put.
+
+```
+pop1 :: State Stack Int
+pop1 = do
+    (x:xs) <- get
+    put xs
+    return x
+
+push1 :: Int -> State Stack ()
+push x = do
+    xs <- get
+    put (x:xs)
+```
+
+```
+(>>=) :: State s a -> (a -> State s b) -> State s b
+```
+
+state `s` stays same, but result `a` may be diffenent.
+
+
+### Random and State monad
+
+`System.Random` 
+
+```
+random :: (RandomGen g, Random a) => g -> (a, g)
+```
+
+Now you can see this function is stateful.
+
+```
+randomSt :: (RandomGen g, Random a) => State g a
+randomSt = state random
+
+threeCoins :: State StdGen (Bool, Bool, Bool)
+threeCoins = do
+    a <- randomSt
+    b <- randomSt
+    c <- randomSt
+    return (a, b, c)
+```
+
+```
+*Main> runState threeCoins (mkStdGen 444)
+((True,False,True),2142124911 2103410263)
+```
+
+
+## [Error](./app/Error.hs)
 
 
 

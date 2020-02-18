@@ -48,6 +48,7 @@ executable ch14-more-monad-exe
       base >=4.7 && <5
     , ch14-more-monad
     , mtl
+    , random
   default-language: Haskell2010
 
 test-suite ch14-more-monad-test

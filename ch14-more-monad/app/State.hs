@@ -1,5 +1,5 @@
 import Control.Monad.State
-
+import System.Random
 
 
 type Stack = [Int]
@@ -42,3 +42,32 @@ moreStack = do
     if a == 100
         then stackStuff
         else return ()
+
+
+stackyStack :: State Stack ()
+stackyStack = do
+    stackNow <- get
+    if stackNow == [1,2,3]
+        then put [8,3,1]
+        else put [9,2,1]
+{-
+pop1 :: State Stack Int
+pop1 = do
+    (x:xs) <- get
+    put xs
+    return x
+
+push1 :: Int -> State Stack ()
+push1 x = do
+    xs <- get
+    put (x:xs)
+-}
+randomSt :: (RandomGen g, Random a) => State g a
+randomSt = state random
+
+threeCoins :: State StdGen (Bool, Bool, Bool)
+threeCoins = do
+    a <- randomSt
+    b <- randomSt
+    c <- randomSt
+    return (a, b, c)
