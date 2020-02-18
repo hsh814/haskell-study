@@ -12,6 +12,7 @@ ghc-pkg list | grep mtl
 - [LogInProgram](#LogInProgram)
 - [EfficientList](#EfficientList)
 - [Reader](#Reader)
+- [State](#State)
 
 ## [Writer](./app/Writer.hs)
 
@@ -372,6 +373,52 @@ addStuff' x = let
 ```
 
 So, function monad is called reader monad. Reader monad can treat function like value with context.
+
+## [State](./app/State.hs)
+
+### Random
+
+Some calculation may depend on state: this is called stateful.
+
+```
+threeCoins :: StdGen -> (Bool, Bool, Bool)
+threeCoins gen =
+    let
+        (firstCoin, newGen) = random gen
+        (secondCoin, newGen') = random newGen
+        (thirdCoin, newGen'') = random newGen'
+    in
+        (firstCoin, secondCoin, thirdCoin)
+```
+
+Haskell is pure: Haskell can't change original value, so it manually returns new generator...
+
+### Stateful
+
+We have `State` monad for this.
+
+```
+s -> (a, s)
+```
+
+`s` is state. This is like other language's assignment.
+
+### Stack
+
+```
+type Stack = [Int]
+
+pop :: Stack -> (Int, Stack)
+pop (x:xs) = (x, xs)
+
+push :: Int -> Stack -> ((), Stack)
+push a xs = ((), a:xs)
+```
+
+pop and push are stateful.
+
+push result was () since it does not have important infromation.
+
 
 
 
