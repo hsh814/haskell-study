@@ -14,6 +14,8 @@ ghc-pkg list | grep mtl
 - [Reader](#Reader)
 - [State](#State)
 - [Error](#Error)
+- [UsefulMonads](#UsefulMonads)
+
 
 ## [Writer](./app/Writer.hs)
 
@@ -578,8 +580,37 @@ threeCoins = do
 
 ## [Error](./app/Error.hs)
 
+### `Control.Monad.Error`
 
+```
+instance (Error e) => Monad (Either e) where
+    return x = Right x
+    Right x >>= f = f x
+    Left err >>= f = Left err
+    fail msg = Left (strMsg msg)
+```
 
+```
+> :t strMsg
+strMsg :: Error a => String -> a
+*Main> strMsg "Boom!!"
+"Boom!!"
+```
+
+We use `Either` to denote error.
+
+```
+*Main> Left "Boom!!" >>= \x -> return (x+1)
+Left "Boom!!"
+*Main> Left "Boom!!" >>= \x -> Left "no way!"
+Left "Boom!!"
+*Main> Right 100 >>= \x -> Left "no way!"
+Left "no way!"
+*Main> Right 100 >>= \x -> return (x+1)
+Right 101
+```
+
+## [UsefulMonads](./app/UsefulMonads.hs)
 
 
 
