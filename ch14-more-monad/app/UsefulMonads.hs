@@ -20,3 +20,9 @@ keepSmall x
 
 powerset :: [a] -> [[a]]
 powerset xs = filterM (\x -> [True, False]) xs
+
+
+bigSmalls :: Int -> Int -> Maybe Int
+bigSmalls acc x
+    | x > 9 = Nothing
+    | otherwise = Just (acc + x)

@@ -790,6 +790,27 @@ powerset xs = filterM (\x -> [True, False]) xs
 
 ### `foldM`
 
+```
+foldM :: (Monad m) => (a -> b -> m a) -> a -> [b] -> m a
+```
+
+You can fold list like this.
+
+```
+bigSmalls :: Int -> Int -> Maybe Int
+bigSmalls acc x
+    | x > 9 = Nothing
+    | otherwise = Just (acc + x)
+```
+
+```
+*Main> foldM bigSmalls 0 [2,8,3,10,1]
+Nothing
+*Main> foldM bigSmalls 0 [2,8,3,8,1]
+Just 22
+```
+
+You can leave log while folding.
 
 
 ## [SafeRPN](./app/SafeRPN.hs)
