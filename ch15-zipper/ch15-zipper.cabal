@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 80972e43675b415acafd50ba6e17522836728f740d2d400c19aed4e8aebb60b9
+-- hash: 6ff2e56392fbe693050fc726bcb48b96a6a9e740bfca3d3ca258d88a213e9d47
 
 name:           ch15-zipper
 version:        0.1.0.0
@@ -39,6 +39,8 @@ library
 executable ch15-zipper-exe
   main-is: Main.hs
   other-modules:
+      FileSystem
+      List
       Tree
       Paths_ch15_zipper
   hs-source-dirs:
