@@ -138,10 +138,36 @@ gotoRoot z = gotoRoot (goUp z)
 
 ## [List](./app/List.hs)
 
+Zipper can be applied to almost any data structure: include list.
 
+### List zipper
 
+```
+data List a = Empty | Cons a (List a) deriving (Show, Read, Eq, Ord)
+```
 
+List can be show as mono tree
 
+```
+type ListZipper a = ([a], [a])
+
+goForward :: ListZipper a -> ListZipper a
+goForward (x:xs, bs) = (xs, x:bs)
+
+goBack :: ListZipper a -> ListZipper a
+goBack (xs, b:bs) = (b:xs, bs)
+```
+
+```
+*Main> goForward (xs, [])
+([2,3,4],[1])
+*Main> goForward ([2,3,4], [1])
+([3,4],[2,1])
+*Main> goBack ([3,4], [2,1])
+([2,3,4],[1])
+```
+
+You can apply zipper to list like this. You can go forward and backward.
 
 
 ## [FileSystem](./app/FileSystem.hs)
