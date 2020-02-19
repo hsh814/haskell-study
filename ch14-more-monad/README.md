@@ -16,7 +16,7 @@ ghc-pkg list | grep mtl
 - [Error](#Error)
 - [UsefulMonads](#UsefulMonads)
 - [SafeRPN](#SafeRPN)
-
+- [MakingMonad](#MakingMonad)
 
 ## [Writer](./app/Writer.hs)
 
@@ -874,23 +874,126 @@ Nothing
 
 right to left composition.
 
+```
+*Main> let f = (+1) . (*100)
+*Main> f 4
+401
+*Main> let g = (\x -> return (x+1)) <=< (\x -> return (x*100))
+*Main> Just 4 >>= g
+Just 401
+```
+
+### `>=>`
+
+left to right composition
 
 ```
-1
+*Main> let h = foldr (.) id [(+1),(*100),(+1)]
+*Main> h 1
+201
+```
 
-1
+## [MakingMonad](./app/MakingMonad.hs)
 
-1
+How to assign probability to each number in list [3,9,5]?
+One easy way is like this.
 
+```
+[(3, 0.5), (9, 0.25), (5, 0.25)]
+```
 
-1
+But floating type is not exect value. So, haskell provide `Data.Ratio`.
 
+```
+*Main> 1 % 4
+1 % 4
+*Main> 1 % 2 + 1 % 4
+3 % 4
+*Main> 1 % 3 + 3 % 5
+14 % 15
+```
 
-1
+Now, we can fix list of probability.
 
-1
+```
+[(3, 1 % 2), (9, 1 % 4), (5, 1 % 4)]
+```
 
-1
+```
+newtype Prob a = Prob { getProb :: [(a, Rational)] } deriving (Show)
 
-1
+instance Functor Prob where
+    fmap f (Prob xs) = Prob $ map (\(x,p) -> (f x, p)) xs
+```
+
+Let's make newtype Prob. It's Functor.
+
+```
+*Main> fmap negate (Prob [(3, 1%2), (9, 1%4), (5, 1%4)])
+Prob {getProb = [(-3,1 % 2),(-9,1 % 4),(-5,1 % 4)]}
+```
+
+Also, if you sum up all probability, it should be 1. Is this Monad?
+
+1. `return x = [(x, 1%1)]`
+
+Least default context is single list, and its probability is 1.
+
+2. `m >>= f` = ?
+
+`m >>= f` = `join (fmap f m)`
+
+```
+thisSituation :: Prob (Prob Char)
+thisSituation = Prob
+    [(Prob [('a', 1%2), (['b', 1%2])], 1%4),
+    (Prob ['c', 1%2), ('d', 1%2)], 3%4)]
+```
+
+You should flat this Prob.
+
+```
+flatten :: Prob (Prob a) -> Prob a
+flatten (Prob xs) = Prob $ concat $ map multAll xs
+    where multAll (Prob innerxs, p) = map (\(x,r) -> (x, p*r)) innerxs
+```
+
+```
+*Main> flatten thisSituation 
+Prob {getProb = [('a',1 % 8),('b',1 % 8),('c',3 % 8),('d',3 % 8)]}
+```
+
+```
+instance Monad Prob where
+    return x = Prob [(x, 1%1)]
+    m >>= f = flatten (fmap f m)
+    fail _ = Prob []
+```
+
+Is this follow rule of monad?
+
+1. `return`: p = 1%1, so it does not affect any context.
+
+2. `m >>= return = m`
+
+3. `f <=< (g <=< h) = (f <=< g) <=< h`: Multiply is associative, so it's true.
+
+Let's throw rigged coin whose probability of tail is 9/10
+
+```
+data RiggedCoin = Heads | Tails deriving (Show, Eq)
+
+riggedCoin :: Prob RiggedCoin
+riggedCoin = Prob [(Heads, 1%10), (Tails, 9%10)]
+
+flipThree :: Prob Bool
+flipThree = do
+    a <- riggedCoin
+    b <- riggedCoin
+    c <- riggedCoin
+    return (all (== Tails) [a,b,c])
+```
+
+```
+Prob {getProb = [(False,1 % 1000),(False,9 % 1000),(False,9 % 1000),(False,81 % 1000),(False,9 % 1000),(False,81 % 1000),(False,81 % 1000),(True,729 % 1000)]}
 ```
