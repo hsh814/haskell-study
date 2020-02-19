@@ -733,6 +733,60 @@ The most interesting thing about join is `m >>= f` is equal to `join (fmap f m)`
 
 ### `filterM`
 
+```
+filter :: (a -> Bool) -> [a] -> [a]
+```
+
+```
+*Main> filter (\x -> x < 4) [9,1,2,6,3,6,8]
+[1,2,3]
+```
+
+What if Bool is monad? 
+
+```
+keepSmall :: Int -> Writer [String] Bool
+keepSmall x
+    | x < 4 = do
+        tell ["Keeping " ++ show x]
+        return True
+    | otherwise = do
+        tell [show x ++ " is too large, throw away."]
+        return False
+```
+
+We need `filterM`.
+
+```
+filterM :: (Monad m) => (a -> m Bool) -> [a] -> m [a]
+filterM f = foldr (\x -> liftA2 (\flg -> if flg then (x:) else return) (f x)) (return [])
+```
+
+```
+*Main> fst $ runWriter $ filterM keepSmall [9,1,2,6,8,3,7,10]
+[1,2,3]
+*Main> mapM_ putStrLn $ snd $ runWriter $ filterM keepSmall [9,1,2,6,8,3,7,10]
+9 is too large, throw away.
+Keeping 1
+Keeping 2
+6 is too large, throw away.
+8 is too large, throw away.
+Keeping 3
+7 is too large, throw away.
+10 is too large, throw away.
+```
+
+You can make powerset of list.
+
+```
+powerset :: [a] -> [[a]]
+powerset xs = filterM (\x -> [True, False]) xs
+```
+
+```
+*Main> powerset [1,2,3]
+[[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]
+```
 
 ### `foldM`
 
