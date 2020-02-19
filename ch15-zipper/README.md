@@ -81,9 +81,60 @@ goRight (Node _ _ r, bs) = (r, R:bs)
 
 How can we get back to parent node? The only thing we know is path.
 
+Then, simple answer is just add information of nodes in path.
 
+```
+data Crumb a = LeftCrumb a (Tree a) | RightCrumb a (Tree a) deriving (Show)
 
+goL :: (Tree a, [Crumb a]) -> (Tree a, [Crumb a])
+goL (Node x l r, bs) = (l, LeftCrumb x r:bs)
 
+goR :: (Tree a, [Crumb a]) -> (Tree a, [Crumb a])
+goR (Node x l r, bs) = (r, RightCrumb x l:bs)
+
+goUp :: (Tree a, [Crumb a]) -> (Tree a, [Crumb a])
+goUp (t, LeftCrumb x r:bs) = (Node x t r, bs)
+goUp (t, RightCrumb x l:bs) = (Node x l t, bs)
+```
+
+We can actually go up.
+
+### Zipper type
+
+```
+type Zipper a = (Tree a, [Crumb a])
+
+modify :: (a -> a) -> Zipper a -> Zipper a
+modify f (Node x l r, bs) = (Node (f x) l r, bs)
+modify f (EmptyTree, bs) = (EmptyTree, bs)
+```
+
+```
+*Main> let newFocus = modify (\_ -> 'P') (goR (goL (freeTree, [])))
+*Main> let newFocus2 = modify (\_ -> 'X') (goUp newFocus)
+```
+
+Zipper type zips data structure and its sub structure.
+
+Let's add a new leaf node.
+
+```
+attach :: Tree a -> Zipper a -> Zipper a
+attach t (_, bs) = (t, bs)
+```
+
+```
+*Main> let leftest = goL $ goL $ goL $ goL (freeTree, [])
+*Main> let newFocus3 = attach (Node 'Z' EmptyTree EmptyTree) leftest
+```
+
+We can go to root directly.
+
+```
+gotoRoot :: Zipper a -> Zipper a
+gotoRoot (t, []) = (t, [])
+gotoRoot z = gotoRoot (goUp z)
+```
 
 ## [List](./app/List.hs)
 
