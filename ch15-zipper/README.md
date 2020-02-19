@@ -172,4 +172,107 @@ You can apply zipper to list like this. You can go forward and backward.
 
 ## [FileSystem](./app/FileSystem.hs)
 
+### File
+
+File system is using tree: rb tree, b tree...
+File is node and directory is path.
+
+Let's make really simple file system.
+
+```
+type Name = String
+type Data = String
+data FS = File Name Data | Dir Name [FS] deriving (Show)
+```
+
+### FS zipper
+
+`cd ..` is easy.
+
+```
+fsUp :: FSZipper -> FSZipper
+fsUp (item, FSCrumb name ls rs:bs) = (Dir name (ls ++ [item] ++ rs), bs)
+```
+
+You can move into directory.
+
+```
+fsTo :: Name -> FSZipper -> FSZipper
+fsTo name (Dir dirName items, bs) =
+    let (ls, item:rs) = break (nameIs name) items
+    in (item, FSCrumb dirName ls rs:bs)
+
+nameIs :: Name -> FS -> Bool
+nameIs name (Dir dirName _) = name == dirName
+nameIs name (File fileName _) = name == fileName
+```
+
+```
+*Main> let newFocus = fsTo "anna" $ fsTo "name" (myDisk, [])
+*Main> fst newFocus
+File "anna" "Annna"
+
+*Main> let newFocus2 = fsTo "elsa" $ fsUp newFocus
+*Main> fst newFocus2
+File "elsa" "Elssa"
+```
+
+### Manipulate file system
+
+```
+fsRename :: Name -> FSZipper -> FSZipper
+fsRename newName (Dir name items, bs) = (Dir newName items, bs)
+fsRename newName (File name dat, bs) = (File newName dat, bs)
+```
+
+Rename file or directory: it does not delete original version.
+
+```
+*Main> let newFocus = fsUp $ fsRename "app" $ fsTo "program" (myDisk, [])
+*Main> fst newFocus
+Dir "root" [File "goat.txt" "baaaaaaa",File "pony.txt" "neigh",Dir "name" [File "anna" "Annna",File "elsa" "Elssa"],Dir "app" [File "bash" "hsab",File "ls" "sl"]]
+```
+
+### maybe?
+
+Maybe file or directory does not exist.
+
+Maybe you try to go up from root.
+
+File system can fail. So, it should be Maybe instance. 
+
+```
+goLeft :: Zipper a -> Maybe (Zipper a)
+goLeft (Node x l r, bs) = Just (l, LeftCrumb x r:bs)
+goLeft (EmptyTree, _) = Nothing
+
+goRight :: Zipper a -> Maybe (Zipper a)
+goRight (Node x l r, bs) = Just (r, RightCrumb x l:bs)
+goRight (EmptyTree, _) = Nothing
+
+goUp' :: Zipper a -> Maybe (Zipper a)
+goUp' (t, LeftCrumb x r:bs) = Just (Node x t r, bs)
+goUp' (t, RightCrumb x l:bs) = Just (Node x l t, bs)
+goUp' (_, []) = Nothing
+```
+
+This is improved version.
+
+```
+*Main> goLeft' (EmptyTree, [])
+Nothing
+*Main> goRight' (Node 'A' EmptyTree EmptyTree, [])
+Just (EmptyTree,[RightCrumb 'A' EmptyTree])
+```
+
+You can use `>>=` since it's monad.
+
+```
+*Main> let newFocus = return (freeTree, []) >>= goRight' >>= goLeft'
+*Main> newFocus
+Just (Node 'W' (Node 'C' EmptyTree EmptyTree) (Node 'R' EmptyTree EmptyTree),[LeftCrumb 'L' (Node 'A' (Node 'A' EmptyTree EmptyTree) (Node 'C' EmptyTree EmptyTree)),RightCrumb 'P' (Node 'O' (Node 'L' (Node 'N' EmptyTree EmptyTree) (Node 'T' EmptyTree EmptyTree)) (Node 'Y' (Node 'S' EmptyTree EmptyTree) (Node 'A' EmptyTree EmptyTree)))])
+
+*Main> newFocus >>= goRight' >>= goRight' >>= goRight'
+Nothing
+```
 
