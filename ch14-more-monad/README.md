@@ -815,8 +815,64 @@ You can leave log while folding.
 
 ## [SafeRPN](./app/SafeRPN.hs)
 
+We did this at chapter 10.
 
+Now do this again with error handling.
 
+### `reads`
+
+```
+readMaybe :: (Read a) => String -> Maybe a
+readMaybe st = case reads st of 
+    [(x,"")] -> Just x
+    _ -> Nothing
+```
+
+`reads` returns Nothing if fails.
+
+```
+*Main> readMaybe "1" :: Maybe Int
+Just 1
+*Main> readMaybe "GOTO HELL" :: Maybe Int
+Nothing
+```
+
+### Let's implement solveRPN and foldingFunction.
+
+```
+solveRPN :: String -> Maybe Double
+solveRPN st = do
+    [result] <- foldM foldingFunction [] (words st)
+    return result
+
+foldingFunction :: [Double] -> String -> Maybe [Double]
+foldingFunction (x:y:ys) "*" = return $ (y * x):ys
+foldingFunction (x:y:ys) "+" = return $ (y + x):ys
+foldingFunction (x:y:ys) "-" = return $ (y - x):ys
+foldingFunction xs numberString = liftM (:xs) (readMaybe numberString)
+```
+
+```
+*Main> foldingFunction [3,2] "*"
+Just [6.0]
+*Main> foldingFunction [3,2] "-"
+Just [-1.0]
+*Main> foldingFunction [] "1 dldk"
+Nothing
+```
+
+```
+*Main> solveRPN "1 2 * 4 +"
+Just 6.0
+*Main> solveRPN "1 2 * 4 + 5 *"
+Just 30.0
+*Main> solveRPN "1 8 slkl"
+Nothing
+```
+
+### `<=<`
+
+right to left composition.
 
 
 ```
